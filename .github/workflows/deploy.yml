@@ -30,4 +30,4 @@ jobs:
             cd /root/anecdot
             git pull origin main
             npm install
-            pm2 restart index # Предполагая, что ваше приложение называется index
+            pm2 restart server # Предполагая, что ваше приложение называется index
