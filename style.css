@@ -1,34 +1,32 @@
-/* Dark theme based on Material UI */
-
 body {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", sans-serif;
-  background: #303030; /* Dark background */
-  color: #fff; /* Light text color */
+  background: #303030; 
+  color: #fff; 
   margin: 0;
   padding: 0;
 }
 
 header {
-  background: #2196f3; /* Material Blue */
+  background: #2196f3; 
   color: white;
   padding: 1rem;
   text-align: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); /* Softer shadow */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 #new-anecdote {
-  background: #424242; /* Darker card background */
+  background: #424242;
   padding: 1rem;
   margin: 1rem auto;
   max-width: 600px;
-  border-radius: 4px; /* Slightly less rounded */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); /* Softer shadow */
+  border-radius: 4px; 
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); 
   display: flex;
 }
 
 .anecdote .anecdote-time {
   font-size: 0.8em;
-  color: #9e9e9e; /* Medium gray */
+  color: #9e9e9e; 
   margin-top: 5px;
 }
 
@@ -36,9 +34,9 @@ header {
   width: 100%;
   height: 60px;
   resize: none;
-  border: none; /* Remove border */
-  background: #616161; /* Darker input background */
-  color: #fff; /* Light text */
+  border: none; 
+  background: #616161; 
+  color: #fff; 
   border-radius: 4px;
   padding: 0.5rem;
   font-size: 1rem;
@@ -46,25 +44,25 @@ header {
 }
 
 #new-anecdote button {
-  background: #2196f3; /* Material Blue */
+  background: #2196f3; 
   color: white;
   border: none;
   padding: 0.5rem 1rem;
   margin-top: 0.5rem;
   cursor: pointer;
   border-radius: 4px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3); /* Subtle shadow */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3); 
 }
 
 #new-anecdote button:hover {
-  background: #1976d2; /* Darker blue on hover */
+  background: #1976d2; 
 }
 
 #new-anecdote .profile-pic {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background-color: #757575; /* Darker gray */
+  background-color: #757575; 
 }
 
 #feed {
@@ -73,18 +71,18 @@ header {
 }
 
 .anecdote {
-  background: #424242; /* Darker card background */
+  background: #424242; 
   padding: 1rem;
   margin-bottom: 0.5rem;
-  border-radius: 4px; /* Slightly less rounded */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); /* Softer shadow */
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .anecdote .profile-pic {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background-color: #757575; /* Darker gray */
+  background-color: #757575;
   margin-right: 10px;
 }
 
@@ -100,7 +98,7 @@ header {
 .anecdote .anecdote-actions button {
   background: none;
   border: none;
-  color: #9e9e9e; /* Medium gray */
+  color: #9e9e9e;
   padding: 5px;
   cursor: pointer;
 }
@@ -111,9 +109,9 @@ header {
   max-width: 400px;
   margin: 2rem auto;
   padding: 2rem;
-  background: #424242; /* Darker form background */
-  border-radius: 4px; /* Slightly less rounded */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); /* Softer shadow */
+  background: #424242; 
+  border-radius: 4px; 
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 #login-form input,
@@ -121,9 +119,9 @@ header {
   width: 100%;
   padding: 0.5rem;
   margin: 0.5rem 0;
-  border: none; /* Remove border */
-  background: #616161; /* Darker input background */
-  color: #fff; /* Light text */
+  border: none; 
+  background: #616161; 
+  color: #fff; 
   border-radius: 4px;
 }
 
@@ -137,16 +135,16 @@ header {
   right: 1rem;
   top: 1rem;
   background: #fff;
-  color: #2196f3; /* Material Blue */
+  color: #2196f3; 
   border: none;
   padding: 0.5rem 1rem;
   border-radius: 4px;
   cursor: pointer;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3); /* Subtle shadow */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3); 
 }
 
 .delete-button {
-  background: #d32f2f; /* Material Red */
+  background: #d32f2f; 
   color: white;
   border: none;
   padding: 5px 10px;

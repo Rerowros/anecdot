@@ -1,5 +1,3 @@
-// Front-end logic to fetch and post anecdotes
-
 document.addEventListener("DOMContentLoaded", async () => {
   // Проверяем авторизацию
   const checkAuth = async () => {
@@ -20,7 +18,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const feedSection = document.getElementById("feed");
   const anecdoteText = document.getElementById("anecdoteText");
 
-  // Fetch anecdotes on page load
+  // Fetch во время загрузки страницы
   fetch("/anecdotes")
     .then(response => response.json())
     .then(data => {
@@ -30,7 +28,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     })
     .catch(error => console.error(error));
 
-  // Post new anecdote
+  // Постинг
   postButton.addEventListener("click", () => {
     const text = anecdoteText.value.trim();
     if (!text) return;
@@ -64,8 +62,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       date = null; // Or a default date, or handle the error as needed
     }
   
-    let timeString = "Invalid Date";
-    let dateString = "Invalid Date";
+    let timeString = "Неверное время";
+    let dateString = "Неверная дата";
   
     if (date) {
       timeString = date.toLocaleTimeString();
@@ -77,7 +75,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         <div class="anecdote-text">${anecdote.text}</div>
         <div class="anecdote-time">Posted on ${dateString} at ${timeString}</div>
         <div class="anecdote-actions">
-          <button>Переслать</button>
+          <button>Братишке отправить</button>
           <button>Нравица</button>
         </div>
       </div>

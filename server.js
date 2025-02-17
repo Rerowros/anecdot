@@ -1,10 +1,4 @@
-/**
- * Simple Express server to serve the anecdote site
- *
- * 1) Install dependencies: npm install express
- * 2) Run the server: node server.js
- * 3) Access the site at http://localhost:3000/
- */
+
 const session = require("express-session");
 const bcrypt = require("bcrypt");
 
@@ -22,7 +16,7 @@ app.use(
   })
 );
 
-// Имитируем базу пользователей в памяти
+// Имитируем БД в памяти
 let users = [];
 
 let anecdotes = [];
@@ -35,11 +29,11 @@ app.get("/anecdotes", (req, res) => {
   res.json(anecdotes);
 });
 
-// POST new anecdote
+// POST анеков
 app.post("/anecdotes", (req, res) => {
   const newAnecdote = { 
     text: req.body.text,
-    timestamp: new Date() // Add timestamp
+    timestamp: new Date() 
   };
   anecdotes.unshift(newAnecdote);
   res.json(newAnecdote);
