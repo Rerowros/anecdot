@@ -225,3 +225,45 @@ header {
 .back-link:hover {
   text-decoration: underline;
 }
+
+#anecdotesTable {
+  width: 100%;
+  background: #424242;
+  border-radius: 4px;
+  margin-top: 15px;
+}
+
+.table-header {
+  display: grid;
+  grid-template-columns: 50px 1fr 150px 80px 100px;
+  padding: 10px;
+  background: #2196f3;
+  color: white;
+  border-radius: 4px 4px 0 0;
+  font-weight: bold;
+}
+
+.anecdote-row {
+  display: grid;
+  grid-template-columns: 50px 1fr 150px 80px 100px;
+  padding: 10px;
+  border-bottom: 1px solid #616161;
+  align-items: center;
+}
+
+.anecdote-row:hover {
+  background: #484848;
+}
+
+.delete-anecdote {
+  background: #d32f2f;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.delete-anecdote:hover {
+  background: #b71c1c;
+}

@@ -86,67 +86,55 @@ document.addEventListener("DOMContentLoaded", async () => {
     const anecdoteDiv = document.createElement("div");
     anecdoteDiv.classList.add("anecdote");
   
-    let date;
-    try {
-      date = new Date(anecdote.timestamp); // Try direct parsing
-      if (isNaN(date.getTime())) {
-        // If direct parsing fails, try Date.parse
-        date = new Date(Date.parse(anecdote.timestamp));
-      }
-    } catch (e) {
-      console.error("Error parsing date:", anecdote.timestamp, e);
-      date = null; // Or a default date, or handle the error as needed
-    }
-  
-    let timeString = "Invalid Date";
-    let dateString = "Invalid Date";
-  
-    if (date) {
-      timeString = date.toLocaleTimeString();
-      dateString = date.toLocaleDateString();
-    }
-  
-    // Check if the anecdote is liked by the user
-    let liked = localStorage.getItem(`liked-${anecdote.id}`) === 'true';
-    const likeButtonClass = liked ? 'liked' : '';
-  
-    anecdoteDiv.innerHTML = `
-      <div class="anecdote-content">
-        <div class="anecdote-text">${anecdote.text}</div>
-        <div class="anecdote-time">Выложено ${dateString} в ${timeString}</div>
-        <div class="anecdote-actions">
-          <button>Переслать</button>
-          <button class="like-button ${likeButtonClass}" data-id="${anecdote.id}">
-            <span class="heart ${likeButtonClass}">❤️</span>
-            <span class="likes-count">${anecdote.likes}</span>
-          </button>
-        </div>
-      </div>
-    `;
-  
-    feedSection.insertBefore(anecdoteDiv, feedSection.firstChild);
-  
-    // Add event listener to like button
-    const likeButton = anecdoteDiv.querySelector('.like-button');
-    likeButton.addEventListener('click', async () => {
-      const anecdoteId = likeButton.dataset.id;
-      try {
-        const res = await fetch(`/anecdotes/${anecdoteId}/like`, {
-          method: 'POST'
+    // Проверяем, лайкнул ли текущий пользователь анекдот
+    fetch(`/anecdotes/${anecdote.id}/liked`)
+      .then(res => res.json())
+      .then(data => {
+        const likeButtonClass = data.liked ? 'liked' : '';
+        
+        anecdoteDiv.innerHTML = `
+          <div class="anecdote-content">
+            <div class="anecdote-text">${anecdote.text}</div>
+            <div class="anecdote-time">Выложено ${new Date(anecdote.timestamp).toLocaleString()}</div>
+            <div class="anecdote-actions">
+              <button>Переслать</button>
+              <button class="like-button ${likeButtonClass}" data-id="${anecdote.id}">
+                <span class="heart ${likeButtonClass}">❤️</span>
+                <span class="likes-count">${anecdote.likes}</span>
+              </button>
+            </div>
+          </div>
+        `;
+        
+        feedSection.insertBefore(anecdoteDiv, feedSection.firstChild);
+        
+        // Добавляем обработчик клика на кнопку лайка
+        const likeButton = anecdoteDiv.querySelector('.like-button');
+        likeButton.addEventListener('click', async () => {
+          try {
+            const response = await fetch(`/anecdotes/${anecdote.id}/like`, {
+              method: 'POST'
+            });
+            
+            if (!response.ok) {
+              throw new Error('Network response was not ok');
+            }
+            
+            const data = await response.json();
+            const likesCountSpan = likeButton.querySelector('.likes-count');
+            likesCountSpan.textContent = data.likes;
+            
+            likeButton.classList.toggle('liked');
+            likeButton.querySelector('.heart').classList.toggle('liked');
+          } catch (err) {
+            console.error('Error:', err);
+            alert('Ошибка при обработке лайка');
+          }
         });
-        const data = await res.json();
-        const likesCountSpan = likeButton.querySelector('.likes-count');
-        likesCountSpan.textContent = data.likes;
-  
-        liked = !liked;
-        localStorage.setItem(`liked-${anecdoteId}`, liked);
-        likeButton.classList.toggle('liked', liked);
-        likeButton.querySelector('.heart').classList.toggle('liked', liked);
-  
-      } catch (err) {
-        console.error(err);
-      }
-    });
+      })
+      .catch(err => {
+        console.error('Error checking like status:', err);
+      });
   }
 
   document.getElementById('logoutButton').addEventListener('click', async () => {

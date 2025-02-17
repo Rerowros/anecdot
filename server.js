@@ -79,52 +79,110 @@ app.post("/anecdotes", (req, res) => {
   );
 });
 
-// Like/unlike anecdote
-app.post("/anecdotes/:id/like", (req, res) => {
-  const anecdoteId = parseInt(req.params.id);
-  const clientIP = getClientIP(req);
+// Обновленный маршрут для лайков
+app.post("/anecdotes/:id/like", async (req, res) => {
+  if (!req.session.user) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
 
+  const anecdoteId = parseInt(req.params.id);
+
+  try {
+    // Получаем ID пользователя
+    db.get(
+      "SELECT id FROM users WHERE username = ?",
+      [req.session.user],
+      (err, user) => {
+        if (err || !user) {
+          return res.status(400).json({ error: "User not found" });
+        }
+
+        // Проверяем, есть ли уже лайк
+        db.get(
+          "SELECT * FROM likes WHERE anecdote_id = ? AND user_id = ?",
+          [anecdoteId, user.id],
+          (err, like) => {
+            if (err) {
+              return res.status(500).json({ error: err.message });
+            }
+
+            if (like) {
+              // Удаляем лайк
+              db.run(
+                "DELETE FROM likes WHERE anecdote_id = ? AND user_id = ?",
+                [anecdoteId, user.id],
+                (err) => {
+                  if (err) {
+                    return res.status(500).json({ error: err.message });
+                  }
+                  updateLikesCount(anecdoteId, res);
+                }
+              );
+            } else {
+              // Добавляем лайк
+              db.run(
+                "INSERT INTO likes (anecdote_id, user_id) VALUES (?, ?)",
+                [anecdoteId, user.id],
+                (err) => {
+                  if (err) {
+                    return res.status(500).json({ error: err.message });
+                  }
+                  updateLikesCount(anecdoteId, res);
+                }
+              );
+            }
+          }
+        );
+      }
+    );
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Вспомогательная функция для обновления количества лайков
+function updateLikesCount(anecdoteId, res) {
   db.get(
-    "SELECT * FROM likes WHERE anecdote_id = ? AND user_ip = ?",
-    [anecdoteId, clientIP],
+    "SELECT COUNT(*) as likes FROM likes WHERE anecdote_id = ?",
+    [anecdoteId],
     (err, row) => {
       if (err) {
         return res.status(500).json({ error: err.message });
       }
-
-      if (row) {
-        // Убираем лайк
-        db.run(
-          "DELETE FROM likes WHERE anecdote_id = ? AND user_ip = ?",
-          [anecdoteId, clientIP]
-        );
-        db.run(
-          "UPDATE anecdotes SET likes = likes - 1 WHERE id = ?",
-          [anecdoteId]
-        );
-      } else {
-        // Добавляем лайк
-        db.run(
-          "INSERT INTO likes (anecdote_id, user_ip) VALUES (?, ?)",
-          [anecdoteId, clientIP]
-        );
-        db.run(
-          "UPDATE anecdotes SET likes = likes + 1 WHERE id = ?",
-          [anecdoteId]
-        );
-      }
-
-      // Возвращаем обновленное количество лайков
-      db.get(
-        "SELECT likes FROM anecdotes WHERE id = ?",
-        [anecdoteId],
-        (err, row) => {
+      
+      // Обновляем количество лайков в таблице анекдотов
+      db.run(
+        "UPDATE anecdotes SET likes = ? WHERE id = ?",
+        [row.likes, anecdoteId],
+        (err) => {
           if (err) {
             return res.status(500).json({ error: err.message });
           }
           res.json({ likes: row.likes });
         }
       );
+    }
+  );
+}
+
+// Добавляем новый endpoint для проверки лайка
+app.get("/anecdotes/:id/liked", (req, res) => {
+  if (!req.session.user) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
+
+  const anecdoteId = parseInt(req.params.id);
+
+  db.get(
+    `SELECT l.* FROM likes l
+     JOIN users u ON l.user_id = u.id
+     WHERE u.username = ? AND l.anecdote_id = ?`,
+    [req.session.user, anecdoteId],
+    (err, like) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      res.json({ liked: !!like });
     }
   );
 });
@@ -264,7 +322,41 @@ app.post("/change-password", async (req, res) => {
   }
 });
 
+app.delete("/anecdotes/:id", (req, res) => {
+  if (!req.session.user) {
+      return res.status(401).json({ error: "Unauthorized" });
+  }
+
+  // Проверяем роль пользователя
+  db.get(
+      "SELECT role FROM users WHERE username = ?",
+      [req.session.user],
+      (err, user) => {
+          if (err || user.role !== 'admin') {
+              return res.status(403).json({ error: "Forbidden" });
+          }
+
+          const anecdoteId = parseInt(req.params.id);
+          
+          // Удаляем сначала все лайки этого анекдота
+          db.run("DELETE FROM likes WHERE anecdote_id = ?", [anecdoteId], (err) => {
+              if (err) {
+                  return res.status(500).json({ error: err.message });
+              }
+              
+              // Затем удаляем сам анекдот
+              db.run("DELETE FROM anecdotes WHERE id = ?", [anecdoteId], (err) => {
+                  if (err) {
+                      return res.status(500).json({ error: err.message });
+                  }
+                  res.json({ success: true });
+              });
+          });
+      }
+  );
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`запущенно на http://localhost:${PORT}`);
 });

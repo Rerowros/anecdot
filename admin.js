@@ -76,4 +76,60 @@ document.addEventListener('DOMContentLoaded', async () => {
             alert('Ошибка при отправке запроса. Проверьте консоль для деталей.');
         }
     });
+
+
+    async function loadAnecdotes() {
+        try {
+            const response = await fetch('/anecdotes');
+            const anecdotes = await response.json();
+            
+            const anecdotesList = document.getElementById('anecdotesList');
+            anecdotesList.innerHTML = '';
+            
+            anecdotes.forEach(anecdote => {
+                const row = document.createElement('div');
+                row.className = 'anecdote-row';
+                row.innerHTML = `
+                    <span>${anecdote.id}</span>
+                    <span>${anecdote.text.substring(0, 100)}${anecdote.text.length > 100 ? '...' : ''}</span>
+                    <span>${new Date(anecdote.timestamp).toLocaleString()}</span>
+                    <span>${anecdote.likes}</span>
+                    <span>
+                        <button class="delete-anecdote" data-id="${anecdote.id}">Удалить</button>
+                    </span>
+                `;
+                anecdotesList.appendChild(row);
+            });
+    
+            // Добавляем обработчики для кнопок удаления
+            document.querySelectorAll('.delete-anecdote').forEach(button => {
+                button.addEventListener('click', async (e) => {
+                    if (confirm('Вы уверены, что хотите удалить этот анекдот?')) {
+                        const id = e.target.dataset.id;
+                        try {
+                            const response = await fetch(`/anecdotes/${id}`, {
+                                method: 'DELETE'
+                            });
+                            
+                            if (response.ok) {
+                                loadAnecdotes(); // Перезагружаем список
+                            } else {
+                                alert('Ошибка при удалении анекдота');
+                            }
+                        } catch (err) {
+                            console.error(err);
+                            alert('Ошибка при отправке запроса');
+                        }
+                    }
+                });
+            });
+        } catch (err) {
+            console.error(err);
+            alert('Ошибка при загрузке анекдотов');
+        }
+    }
+    
+    // Загружаем анекдоты при загрузке страницы
+    loadAnecdotes();
+    
 });

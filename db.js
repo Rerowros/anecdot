@@ -26,10 +26,12 @@ db.serialize(() => {
 
   // Таблица лайков 
   db.run(`CREATE TABLE IF NOT EXISTS likes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     anecdote_id INTEGER,
-    user_ip TEXT,
-    PRIMARY KEY (anecdote_id, user_ip),
-    FOREIGN KEY (anecdote_id) REFERENCES anecdotes(id)
+    user_id INTEGER,
+    FOREIGN KEY (anecdote_id) REFERENCES anecdotes(id),
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    UNIQUE(anecdote_id, user_id)
   )`);
 
   db.get("SELECT * FROM users WHERE username = 'admin'", async (err, row) => {
