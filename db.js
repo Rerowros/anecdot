@@ -7,12 +7,14 @@ const db = new sqlite3.Database(path.join(__dirname, 'database.sqlite'));
 // Инициализируем таблицы
 db.serialize(() => {
   // Таблица пользователей
-  db.run(`CREATE TABLE IF NOT EXISTS users (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    username TEXT UNIQUE NOT NULL,
-    password TEXT NOT NULL,
-    role TEXT DEFAULT 'user'
-  )`);
+  db.run(`
+    CREATE TABLE IF NOT EXISTS users (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      username TEXT UNIQUE,
+      password TEXT,
+      role TEXT DEFAULT 'user'
+    )
+  `);
 
   // Таблица анекдотов
   db.run(`CREATE TABLE IF NOT EXISTS anecdotes (

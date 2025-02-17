@@ -162,3 +162,69 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 });
+
+const bcrypt = require('bcrypt');
+
+async function createAdminUser() {
+  const adminUsername = 'admin';
+  const adminPassword = 'admin123'; // Измените на более безопасный пароль
+  
+  try {
+    const hashedPassword = await bcrypt.hash(adminPassword, 10);
+    
+    db.run(
+      "INSERT OR IGNORE INTO users (username, password, role) VALUES (?, ?, ?)",
+      [adminUsername, hashedPassword, 'admin'],
+      (err) => {
+        if (err) {
+          console.error('Ошибка при создании админа:', err);
+        } else {
+          console.log('Администратор успешно создан');
+        }
+      }
+    );
+  } catch (err) {
+    console.error('Ошибка при хешировании пароля:', err);
+  }
+}
+
+// Вызываем функцию после инициализации базы данных
+createAdminUser();
+
+// Добавьте после проверки роли пользователя
+if (isAdmin) {
+  document.getElementById('change-password-form').style.display = 'block';
+  
+  document.getElementById('changePasswordBtn').addEventListener('click', async () => {
+    const currentPassword = document.getElementById('currentPassword').value;
+    const newPassword = document.getElementById('newPassword').value;
+    
+    if (!currentPassword || !newPassword) {
+      alert('Пожалуйста, заполните все поля');
+      return;
+    }
+    
+    try {
+      const response = await fetch('/change-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ currentPassword, newPassword })
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok) {
+        alert('Пароль успешно изменен');
+        document.getElementById('currentPassword').value = '';
+        document.getElementById('newPassword').value = '';
+      } else {
+        alert(data.error || 'Ошибка при изменении пароля');
+      }
+    } catch (err) {
+      alert('Ошибка при отправке запроса');
+      console.error(err);
+    }
+  });
+}

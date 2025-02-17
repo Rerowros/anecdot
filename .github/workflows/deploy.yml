@@ -26,11 +26,14 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd /root/anecdot
-            git pull origin main
-            npm install
+            git fetch --all
+            git checkout main
+            git reset --hard origin/main
+            git clean -fd
+            npm ci
             pm2 list
             if pm2 pid anecdot > /dev/null; then
-              pm2 restart anecdot
+              pm2 restart anecdot --update-env
             else
               pm2 start server.js --name anecdot
             fi

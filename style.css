@@ -161,3 +161,67 @@ header {
   background: #757575;
   cursor: not-allowed;
 }
+
+#change-password-form {
+  margin-top: 20px;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+#change-password-form input {
+  margin: 5px 0;
+  padding: 8px;
+  width: 100%;
+}
+
+#changePasswordBtn {
+  margin-top: 10px;
+  padding: 8px 15px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#changePasswordBtn:hover {
+  background-color: #45a049;
+}
+
+.admin-container {
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 20px;
+}
+
+.admin-section {
+  margin-bottom: 30px;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.password-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 300px;
+}
+
+.password-form input {
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.back-link {
+  display: inline-block;
+  margin-top: 20px;
+  color: #666;
+  text-decoration: none;
+}
+
+.back-link:hover {
+  text-decoration: underline;
+}

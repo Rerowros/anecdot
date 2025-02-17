@@ -23,5 +23,15 @@
   </main>
 
   <script src="script.js"></script>
+  <script>
+    // Добавьте в функцию проверки роли
+    if (isAdmin) {
+        const adminLink = document.createElement('a');
+        adminLink.href = 'admin.html';
+        adminLink.textContent = 'Панель администратора';
+        adminLink.className = 'admin-link';
+        document.querySelector('header').appendChild(adminLink);
+    }
+  </script>
 </body>
 </html>

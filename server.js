@@ -150,23 +150,31 @@ app.post("/register", async (req, res) => {
 });
 
 // Маршрут для входа
-app.post("/login", async (req, res) => {
+app.post("/login", (req, res) => {
   const { username, password } = req.body;
+  
   db.get(
-    "SELECT * FROM users WHERE username = ?",
+    "SELECT password, role FROM users WHERE username = ?",
     [username],
     async (err, user) => {
-      if (err || !user) {
-        return res.status(401).json({ error: "Invalid credentials" });
+      if (err) {
+        return res.status(500).json({ error: "Database error" });
       }
-
+      if (!user) {
+        return res.status(401).json({ error: "User not found" });
+      }
+      
       const match = await bcrypt.compare(password, user.password);
-      if (!match) {
-        return res.status(401).json({ error: "Invalid credentials" });
+      if (match) {
+        req.session.user = username;
+        req.session.role = user.role;
+        res.json({ 
+          username,
+          role: user.role 
+        });
+      } else {
+        res.status(401).json({ error: "Invalid password" });
       }
-
-      req.session.user = username;
-      res.json({ success: true });
     }
   );
 });
@@ -204,8 +212,58 @@ app.get("/user-role", (req, res) => {
     }
   );
 });
+// Маршрут для смены пароля
+app.post("/change-password", async (req, res) => {
+  const { currentPassword, newPassword } = req.body;
+  
+  // Проверяем, авторизован ли пользователь
+  if (!req.session.user) {
+    return res.status(403).json({ error: "Доступ запрещен" });
+  }
 
-// Start server
+  try {
+    // Получаем текущего пользователя
+    db.get(
+      "SELECT password, role FROM users WHERE username = ?",
+      [req.session.user],
+      async (err, user) => {
+        if (err || !user) {
+          return res.status(400).json({ error: "Пользователь не найден" });
+        }
+
+        if (user.role !== 'admin') {
+          return res.status(403).json({ error: "Только для администраторов" });
+        }
+
+        // Проверяем текущий пароль
+        const isValid = await bcrypt.compare(currentPassword, user.password);
+        if (!isValid) {
+          return res.status(400).json({ error: "Неверный текущий пароль" });
+        }
+
+        // Хешируем новый пароль
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+        // Обновляем пароль в базе данных
+        db.run(
+          "UPDATE users SET password = ? WHERE username = ?",
+          [hashedPassword, req.session.user],
+          (err) => {
+            if (err) {
+              console.error('Ошибка при обновлении пароля:', err);
+              return res.status(500).json({ error: "Ошибка обновления пароля" });
+            }
+            res.json({ message: "Пароль успешно обновлен" });
+          }
+        );
+      }
+    );
+  } catch (err) {
+    console.error('Ошибка сервера:', err);
+    res.status(500).json({ error: "Внутренняя ошибка сервера" });
+  }
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
