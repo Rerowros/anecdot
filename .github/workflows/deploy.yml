@@ -29,8 +29,8 @@ jobs:
             git pull origin main
             npm install
             pm2 list
-            if pm2 pid server > /dev/null; then
-              pm2 restart server
+            if pm2 pid anecdot > /dev/null; then
+              pm2 restart anecdot
             else
-              pm2 start server.js --name server
+              pm2 start server.js --name anecdot
             fi
