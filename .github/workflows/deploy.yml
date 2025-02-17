@@ -17,9 +17,7 @@ jobs:
           
       - name: Install Dependencies
         run: npm install
-        
-      # Убираем этап сборки, если он не нужен
-        
+                
       - name: Deploy to Server
         uses: appleboy/ssh-action@master
         with:
@@ -30,4 +28,9 @@ jobs:
             cd /root/anecdot
             git pull origin main
             npm install
-            pm2 restart server # Предполагая, что ваше приложение называется index
+            pm2 list
+            if pm2 pid server > /dev/null; then
+              pm2 restart server
+            else
+              pm2 start server.js --name server
+            fi
