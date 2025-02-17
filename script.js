@@ -1,10 +1,46 @@
+// Front-end logic to fetch and post anecdotes
+
 document.addEventListener("DOMContentLoaded", async () => {
+  // Добавить в начало DOMContentLoaded обработчика
+
+  let isAdmin = false;
+
+  // Проверяем роль пользователя
+  const checkRole = async () => {
+    try {
+      const res = await fetch('/user-role');
+      const data = await res.json();
+      isAdmin = data.role === 'admin';
+      
+      const postButton = document.getElementById("postButton");
+      const anecdoteText = document.getElementById("anecdoteText");
+      
+      if (!isAdmin) {
+        postButton.disabled = true;
+        anecdoteText.disabled = true;
+        postButton.style.opacity = "0.5";
+        anecdoteText.style.opacity = "0.5";
+        
+        const newAnecdoteSection = document.getElementById("new-anecdote");
+        const message = document.createElement("div");
+        message.textContent = "Только администраторы могут публиковать анекдоты";
+        message.style.color = "#ff9800";
+        message.style.marginTop = "10px";
+        newAnecdoteSection.appendChild(message);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  await checkRole();
+
   // Проверяем авторизацию
   const checkAuth = async () => {
     try {
       const res = await fetch('/check-auth');
       if (res.status === 401) {
-        window.location.href = '/register.html';
+        window.location.href = '/login.html';
       }
     } catch (err) {
       console.error(err);
@@ -18,7 +54,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const feedSection = document.getElementById("feed");
   const anecdoteText = document.getElementById("anecdoteText");
 
-  // Fetch во время загрузки страницы
+  // Fetch anecdotes on page load
   fetch("/anecdotes")
     .then(response => response.json())
     .then(data => {
@@ -28,7 +64,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     })
     .catch(error => console.error(error));
 
-  // Постинг
+  // Post new anecdote
   postButton.addEventListener("click", () => {
     const text = anecdoteText.value.trim();
     if (!text) return;
@@ -62,26 +98,55 @@ document.addEventListener("DOMContentLoaded", async () => {
       date = null; // Or a default date, or handle the error as needed
     }
   
-    let timeString = "Неверное время";
-    let dateString = "Неверная дата";
+    let timeString = "Invalid Date";
+    let dateString = "Invalid Date";
   
     if (date) {
       timeString = date.toLocaleTimeString();
       dateString = date.toLocaleDateString();
     }
   
+    // Check if the anecdote is liked by the user
+    let liked = localStorage.getItem(`liked-${anecdote.id}`) === 'true';
+    const likeButtonClass = liked ? 'liked' : '';
+  
     anecdoteDiv.innerHTML = `
       <div class="anecdote-content">
         <div class="anecdote-text">${anecdote.text}</div>
-        <div class="anecdote-time">Posted on ${dateString} at ${timeString}</div>
+        <div class="anecdote-time">Выложено ${dateString} в ${timeString}</div>
         <div class="anecdote-actions">
-          <button>Братишке отправить</button>
-          <button>Нравица</button>
+          <button>Переслать</button>
+          <button class="like-button ${likeButtonClass}" data-id="${anecdote.id}">
+            <span class="heart ${likeButtonClass}">❤️</span>
+            <span class="likes-count">${anecdote.likes}</span>
+          </button>
         </div>
       </div>
     `;
   
     feedSection.insertBefore(anecdoteDiv, feedSection.firstChild);
+  
+    // Add event listener to like button
+    const likeButton = anecdoteDiv.querySelector('.like-button');
+    likeButton.addEventListener('click', async () => {
+      const anecdoteId = likeButton.dataset.id;
+      try {
+        const res = await fetch(`/anecdotes/${anecdoteId}/like`, {
+          method: 'POST'
+        });
+        const data = await res.json();
+        const likesCountSpan = likeButton.querySelector('.likes-count');
+        likesCountSpan.textContent = data.likes;
+  
+        liked = !liked;
+        localStorage.setItem(`liked-${anecdoteId}`, liked);
+        likeButton.classList.toggle('liked', liked);
+        likeButton.querySelector('.heart').classList.toggle('liked', liked);
+  
+      } catch (err) {
+        console.error(err);
+      }
+    });
   }
 
   document.getElementById('logoutButton').addEventListener('click', async () => {
