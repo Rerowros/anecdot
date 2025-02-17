@@ -1,0 +1,155 @@
+/* Dark theme based on Material UI */
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", sans-serif;
+  background: #303030; /* Dark background */
+  color: #fff; /* Light text color */
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  background: #2196f3; /* Material Blue */
+  color: white;
+  padding: 1rem;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); /* Softer shadow */
+}
+
+#new-anecdote {
+  background: #424242; /* Darker card background */
+  padding: 1rem;
+  margin: 1rem auto;
+  max-width: 600px;
+  border-radius: 4px; /* Slightly less rounded */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); /* Softer shadow */
+  display: flex;
+}
+
+.anecdote .anecdote-time {
+  font-size: 0.8em;
+  color: #9e9e9e; /* Medium gray */
+  margin-top: 5px;
+}
+
+#new-anecdote textarea {
+  width: 100%;
+  height: 60px;
+  resize: none;
+  border: none; /* Remove border */
+  background: #616161; /* Darker input background */
+  color: #fff; /* Light text */
+  border-radius: 4px;
+  padding: 0.5rem;
+  font-size: 1rem;
+  margin-left: 10px;
+}
+
+#new-anecdote button {
+  background: #2196f3; /* Material Blue */
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  margin-top: 0.5rem;
+  cursor: pointer;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3); /* Subtle shadow */
+}
+
+#new-anecdote button:hover {
+  background: #1976d2; /* Darker blue on hover */
+}
+
+#new-anecdote .profile-pic {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #757575; /* Darker gray */
+}
+
+#feed {
+  max-width: 600px;
+  margin: 1rem auto;
+}
+
+.anecdote {
+  background: #424242; /* Darker card background */
+  padding: 1rem;
+  margin-bottom: 0.5rem;
+  border-radius: 4px; /* Slightly less rounded */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); /* Softer shadow */
+}
+
+.anecdote .profile-pic {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #757575; /* Darker gray */
+  margin-right: 10px;
+}
+
+.anecdote .anecdote-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.anecdote .anecdote-actions {
+  margin-top: 10px;
+}
+
+.anecdote .anecdote-actions button {
+  background: none;
+  border: none;
+  color: #9e9e9e; /* Medium gray */
+  padding: 5px;
+  cursor: pointer;
+}
+
+#login-form,
+#register-form,
+#management {
+  max-width: 400px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: #424242; /* Darker form background */
+  border-radius: 4px; /* Slightly less rounded */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); /* Softer shadow */
+}
+
+#login-form input,
+#register-form input {
+  width: 100%;
+  padding: 0.5rem;
+  margin: 0.5rem 0;
+  border: none; /* Remove border */
+  background: #616161; /* Darker input background */
+  color: #fff; /* Light text */
+  border-radius: 4px;
+}
+
+#register-form p {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+#logoutButton {
+  position: absolute;
+  right: 1rem;
+  top: 1rem;
+  background: #fff;
+  color: #2196f3; /* Material Blue */
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3); /* Subtle shadow */
+}
+
+.delete-button {
+  background: #d32f2f; /* Material Red */
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}

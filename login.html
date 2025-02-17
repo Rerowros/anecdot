@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Вход</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <form id="login-form">
+    <h2>Вход</h2>
+    <input type="text" id="username" placeholder="Логин" />
+    <input type="password" id="password" placeholder="Пароль" />
+    <button type="submit">Войти</button>
+    <a href="register.html">Регистрация</a>
+    </form>
+
+  <script>
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+
+      const res = await fetch('/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+
+      if (res.ok) {
+        window.location.href = '/admin.html';
+      } else {
+        alert('Неверные данные для входа');
+      }
+    });
+  </script>
+</body>
+</html>
