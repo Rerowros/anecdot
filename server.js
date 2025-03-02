@@ -1,10 +1,14 @@
-const db = require('./db');
-
+const https = require('https');
+const fs = require('fs');
+const express = require("express");
+const path = require("path");
 const session = require("express-session");
 const bcrypt = require("bcrypt");
 
-const express = require("express");
-const path = require("path");
+const options = {
+  key: fs.readFileSync('/root/cert/rerowros.ddns.net/privkey.pem'),
+  cert: fs.readFileSync('/root/cert/rerowros.ddns.net/fullchain.pem')
+};
 
 const app = express();
 app.use(express.json());
@@ -270,6 +274,7 @@ app.get("/user-role", (req, res) => {
     }
   );
 });
+
 // Маршрут для смены пароля
 app.post("/change-password", async (req, res) => {
   const { currentPassword, newPassword } = req.body;
@@ -357,6 +362,6 @@ app.delete("/anecdotes/:id", (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`запущенно на http://localhost:${PORT}`);
+https.createServer(options, app).listen(PORT, () => {
+  console.log(`запущенно на https://localhost:${PORT}`);
 });
