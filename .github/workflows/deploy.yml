@@ -37,3 +37,4 @@ jobs:
             else
               pm2 start server.js --name anecdot
             fi
+            pm2 save
