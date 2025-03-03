@@ -19,13 +19,12 @@ app.use(
 
 // Настройка HTTPS с взаимной TLS-аутентификацией
 const httpsOptions = {
-  key: fs.readFileSync('/root/cert/rerowros.ddns.net/privkey.pem'),     // Путь к вашему приватному ключу
-  cert: fs.readFileSync('/root/cert/rerowros.ddns.net/fullchain.pem'),    // Путь к вашему сертификату
-  ca: fs.readFileSync('/root/CA/ca.crt'),   // Сертификат центра сертификации
+  key: fs.readFileSync('cert/privkey.pem'),     // Путь к вашему приватному ключу
+  cert: fs.readFileSync('cert/fullchain.pem'),    // Путь к вашему сертификату
+  ca: fs.readFileSync('cert/ca.crt'),   // Сертификат центра сертификации
   requestCert: true,      // Запрашивать сертификат у клиента
   rejectUnauthorized: true // Отклонять неавторизованные подключения
 };
-
 
 // Middleware для проверки TLS-сертификата клиента
 const checkClientCert = (req, res, next) => {

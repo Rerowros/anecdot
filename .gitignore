@@ -1,2 +1,12 @@
 node_modules/
 
+cert/ca.crt
+cert/ca.key
+cert/ca.srl
+cert/client_extensions.cnf
+cert/client.crt
+cert/client.csr
+cert/client.key
+cert/client.p12
+cert/fullchain.pem
+cert/privkey.pem
