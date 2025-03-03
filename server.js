@@ -62,29 +62,8 @@ const checkClientCert = (req, res, next) => {
   );
 };
 
-// Применяем middleware проверки mTLS ко всему приложению, 
-// за исключением публичных маршрутов, где не требуется аутентификация
-// Создаем массив публичных маршрутов, которые не требуют аутентификацию через mTLS
-const publicRoutes = [
-  '/login',
-  '/register',
-  '/check-auth'
-];
-
-// Применяем middleware для всех маршрутов, кроме публичных
+// Применяем middleware проверки mTLS ко ВСЕМ маршрутам без исключений
 app.use((req, res, next) => {
-  // Проверяем, является ли текущий маршрут публичным
-  const isPublicRoute = publicRoutes.some(route => req.path.startsWith(route));
-  
-  // Для статических файлов также не требуем mTLS
-  const isStaticFile = req.path.startsWith('/') && !req.path.includes('/api/');
-  
-  if (isPublicRoute || isStaticFile) {
-    // Если маршрут публичный или статический файл, пропускаем проверку mTLS
-    return next();
-  }
-  
-  // В противном случае применяем проверку mTLS
   checkClientCert(req, res, next);
 });
 
@@ -251,7 +230,7 @@ app.get("/anecdotes/:id/liked", (req, res) => {
   );
 });
 
-// Маршрут для регистрации (остается публичным)
+// Маршрут для регистрации (теперь требует сертификат)
 app.post("/register", async (req, res) => {
   const { username, password } = req.body;
   try {
@@ -271,7 +250,7 @@ app.post("/register", async (req, res) => {
   }
 });
 
-// Маршрут для входа (остается публичным)
+// Маршрут для входа (теперь требует сертификат)
 app.post("/login", (req, res) => {
   const { username, password } = req.body;
   
@@ -301,7 +280,7 @@ app.post("/login", (req, res) => {
   );
 });
 
-// Проверка авторизации (остается публичной)
+// Проверка авторизации (теперь требует сертификат)
 app.get("/check-auth", (req, res) => {
   if (req.session.user) {
     res.status(200).send("Authorized");
@@ -404,4 +383,17 @@ app.delete("/anecdotes/:id", (req, res) => {
               // Затем удаляем сам анекдот
               db.run("DELETE FROM anecdotes WHERE id = ?", [anecdoteId], (err) => {
                   if (err) {
-                      return res.status(500).json({
+                      return res.status(500).json({ error: err.message });
+                  }
+                  res.json({ success: true });
+              });
+          });
+      }
+  );
+});
+
+// Создаем HTTPS-сервер
+const httpsServer = https.createServer(httpsOptions, app);
+httpsServer.listen(443, () => {
+  console.log('HTTPS сервер запущен на порту 443');
+});
