@@ -24,9 +24,15 @@ const httpsOptions = {
   ca: fs.readFileSync('/root/CA/ca.crt'),                               // Сертификат центра сертификации
   requestCert: true,                                                    // Запрашивать сертификат у клиента
   rejectUnauthorized: true,                                             // Отклонять неавторизованные подключения
-  crl: fs.readFileSync('/root/CA/ca.crl')                               // Путь к вашему списку отозванных сертификатов
+  crl: fs.readFileSync('/root/CA/ca.crl'),                              // Путь к вашему списку отозванных сертификатов
+  checkServerIdentity: (host, cert) => {
+    console.log('Проверка сертификата клиента:', cert);
+    if (cert.revoked) {
+      console.log('Сертификат отозван');
+      throw new Error('Сертификат отозван');
+    }
+  }
 };
-
 
 // Middleware для проверки TLS-сертификата клиента
 const checkClientCert = (req, res, next) => {

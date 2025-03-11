@@ -10,3 +10,14 @@ cert/client.key
 cert/client.p12
 cert/fullchain.pem
 cert/privkey.pem
+client.p12
+database.sqlite
+server.js
+win.js
+cert/ca.crl
+cert/demoCA/crlnumber
+cert/demoCA/crlnumber.old
+cert/demoCA/index.txt
+cert/demoCA/index.txt.attr
+cert/demoCA/index.txt.old
+cert/demoCA/serial
