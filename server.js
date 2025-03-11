@@ -395,4 +395,4 @@ app.delete("/anecdotes/:id", (req, res) => {
 // Создаем HTTPS-сервер на порту 3000 (заменяем 443 на 3000)
 const httpsServer = https.createServer(httpsOptions, app);
 httpsServer.listen(3000, () => {
-  console.log('HTTPS сервер запущен на порту 3000');
+  console.log('HTTPS сервер запущен на порту 3000'); }
