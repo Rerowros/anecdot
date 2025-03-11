@@ -24,15 +24,9 @@ const httpsOptions = {
   ca: fs.readFileSync('/root/CA/ca.crt'),                               // Сертификат центра сертификации
   requestCert: true,                                                    // Запрашивать сертификат у клиента
   rejectUnauthorized: true,                                             // Отклонять неавторизованные подключения
-  crl: fs.readFileSync('/root/CA/ca.crl'),                              // Путь к вашему списку отозванных сертификатов
-  checkServerIdentity: (host, cert) => {
-    console.log('Проверка сертификата клиента:', cert);
-    if (cert.revoked) {
-      console.log('Сертификат отозван');
-      throw new Error('Сертификат отозван');
-    }
-  }
+  crl: fs.readFileSync('/root/CA/ca.crl')                               // Путь к вашему списку отозванных сертификатов
 };
+
 
 // Middleware для проверки TLS-сертификата клиента
 const checkClientCert = (req, res, next) => {
@@ -398,8 +392,8 @@ app.delete("/anecdotes/:id", (req, res) => {
   );
 });
 
-const PORT = process.env.PORT || 3000;
- app.listen(PORT, () => {
-   console.log(`Server running on port ${PORT}`);
-   console.log(`запущенно на http://localhost:${PORT}`);
- });
+// Создаем HTTPS-сервер на порту 3000 (заменяем 443 на 3000)
+const httpsServer = https.createServer(httpsOptions, app);
+httpsServer.listen(3000, () => {
+  console.log('HTTPS сервер запущен на порту 3000');
+});
