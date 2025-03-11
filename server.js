@@ -392,7 +392,8 @@ app.delete("/anecdotes/:id", (req, res) => {
   );
 });
 
-// Создаем HTTPS-сервер на порту 3000 (заменяем 443 на 3000)
-const httpsServer = https.createServer(httpsOptions, app);
-httpsServer.listen(3000, () => {
-  console.log('HTTPS сервер запущен на порту 3000'); }
+const PORT = process.env.PORT || 3000;
+ app.listen(PORT, () => {
+   console.log(`Server running on port ${PORT}`);
+   console.log(`запущенно на http://localhost:${PORT}`);
+ });
