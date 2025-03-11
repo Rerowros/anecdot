@@ -303,47 +303,6 @@ app.post("/change-password", async (req, res) => {
   
   // mTLS уже установил пользователя в сессию
 
-  try {
-    // Получаем текущего пользователя
-    db.get(
-      "SELECT password, role FROM users WHERE username = ?",
-      [req.session.user],
-      async (err, user) => {
-        if (err || !user) {
-          return res.status(400).json({ error: "Пользователь не найден" });
-        }
-
-        if (user.role !== 'admin') {
-          return res.status(403).json({ error: "Только для администраторов" });
-        }
-
-        // Проверяем текущий пароль
-        const isValid = await bcrypt.compare(currentPassword, user.password);
-        if (!isValid) {
-          return res.status(400).json({ error: "Неверный текущий пароль" });
-        }
-
-        // Хешируем новый пароль
-        const hashedPassword = await bcrypt.hash(newPassword, 10);
-
-        // Обновляем пароль в базе данных
-        db.run(
-          "UPDATE users SET password = ? WHERE username = ?",
-          [hashedPassword, req.session.user],
-          (err) => {
-            if (err) {
-              console.error('Ошибка при обновлении пароля:', err);
-              return res.status(500).json({ error: "Ошибка обновления пароля" });
-            }
-            res.json({ message: "Пароль успешно обновлен" });
-          }
-        );
-      }
-    );
-  } catch (err) {
-    console.error('Ошибка сервера:', err);
-    res.status(500).json({ error: "Внутренняя ошибка сервера" });
-  }
 });
 
 app.delete("/anecdotes/:id", (req, res) => {
