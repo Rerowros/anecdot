@@ -45,21 +45,7 @@ const checkClientCert = (req, res, next) => {
   // Извлекаем идентификатор пользователя из сертификата (например, Common Name)
   const username = cert.subject.CN;
   
-  // Можно проверить пользователя в базе данных
-  db.get(
-    "SELECT * FROM users WHERE username = ?",
-    [username],
-    (err, user) => {
-      if (err || !user) {
-        return res.status(401).json({ error: 'Пользователь не найден' });
-      }
-      
-      // Устанавливаем пользователя в сессию
-      req.session.user = username;
-      req.session.role = user.role;
-      next();
-    }
-  );
+ 
 };
 
 // Применяем middleware проверки mTLS ко ВСЕМ маршрутам без исключений
