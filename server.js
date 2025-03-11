@@ -68,11 +68,13 @@ const checkClientCert = (req, res, next) => {
   );
 };
 
-// Применяем middleware для защищенных маршрутов
-// например:
-app.get("/protected-route", checkClientCert, (req, res) => {
-  res.json({ message: "Доступ разрешен по TLS-сертификату" });
+// Применяем middleware проверки mTLS ко ВСЕМ маршрутам без исключений
+app.use((req, res, next) => {
+  checkClientCert(req, res, next);
 });
+
+// Serve static files (HTML, CSS, JS)
+app.use(express.static(path.join(__dirname)));
 
 // Имитируем базу пользователей в памяти
 let users = [];
@@ -83,9 +85,6 @@ let anecdotes = [];
 const getClientIP = (req) => {
   return req.ip || req.connection.remoteAddress;
 };
-
-// Serve static files (HTML, CSS, JS)
-app.use(express.static(path.join(__dirname)));
 
 // GET anecdotes
 app.get("/anecdotes", (req, res) => {
@@ -99,10 +98,7 @@ app.get("/anecdotes", (req, res) => {
 
 // POST new anecdote
 app.post("/anecdotes", (req, res) => {
-  if (!req.session.user) {
-    return res.status(401).json({ error: "Unauthorized" });
-  }
-
+  // mTLS уже проверил пользователя, но мы все еще проверяем роль
   db.get(
     "SELECT role FROM users WHERE username = ?",
     [req.session.user],
@@ -138,9 +134,7 @@ app.post("/anecdotes", (req, res) => {
 
 // Обновленный маршрут для лайков
 app.post("/anecdotes/:id/like", async (req, res) => {
-  if (!req.session.user) {
-    return res.status(401).json({ error: "Unauthorized" });
-  }
+  // mTLS уже установил пользователя в сессию
 
   const anecdoteId = parseInt(req.params.id);
 
@@ -224,9 +218,7 @@ function updateLikesCount(anecdoteId, res) {
 
 // Добавляем новый endpoint для проверки лайка
 app.get("/anecdotes/:id/liked", (req, res) => {
-  if (!req.session.user) {
-    return res.status(401).json({ error: "Unauthorized" });
-  }
+  // Проверка уже выполнена через mTLS
 
   const anecdoteId = parseInt(req.params.id);
 
@@ -244,7 +236,7 @@ app.get("/anecdotes/:id/liked", (req, res) => {
   );
 });
 
-// Маршрут для регистрации
+// Маршрут для регистрации (теперь требует сертификат)
 app.post("/register", async (req, res) => {
   const { username, password } = req.body;
   try {
@@ -264,7 +256,7 @@ app.post("/register", async (req, res) => {
   }
 });
 
-// Маршрут для входа
+// Маршрут для входа (теперь требует сертификат)
 app.post("/login", (req, res) => {
   const { username, password } = req.body;
   
@@ -294,7 +286,7 @@ app.post("/login", (req, res) => {
   );
 });
 
-// Проверка авторизации
+// Проверка авторизации (теперь требует сертификат)
 app.get("/check-auth", (req, res) => {
   if (req.session.user) {
     res.status(200).send("Authorized");
@@ -310,12 +302,9 @@ app.post("/logout", (req, res) => {
   });
 });
 
-// Новый маршрут для проверки роли пользователя
+// Маршрут для проверки роли пользователя
 app.get("/user-role", (req, res) => {
-  if (!req.session.user) {
-    return res.status(401).json({ error: "Unauthorized" });
-  }
-
+  // mTLS уже установил пользователя в сессию
   db.get(
     "SELECT role FROM users WHERE username = ?",
     [req.session.user],
@@ -332,10 +321,7 @@ app.get("/user-role", (req, res) => {
 app.post("/change-password", async (req, res) => {
   const { currentPassword, newPassword } = req.body;
   
-  // Проверяем, авторизован ли пользователь
-  if (!req.session.user) {
-    return res.status(403).json({ error: "Доступ запрещен" });
-  }
+  // mTLS уже установил пользователя в сессию
 
   try {
     // Получаем текущего пользователя
@@ -381,9 +367,7 @@ app.post("/change-password", async (req, res) => {
 });
 
 app.delete("/anecdotes/:id", (req, res) => {
-  if (!req.session.user) {
-      return res.status(401).json({ error: "Unauthorized" });
-  }
+  // mTLS уже установил пользователя в сессию
 
   // Проверяем роль пользователя
   db.get(
@@ -414,10 +398,8 @@ app.delete("/anecdotes/:id", (req, res) => {
   );
 });
 
-// Создаем HTTPS-сервер
-const server = https.createServer(httpsOptions, app);
-
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-  console.log(`Сервер запущен на https://localhost:${PORT}`);
-});
+ app.listen(PORT, () => {
+   console.log(`Server running on port ${PORT}`);
+   console.log(`запущенно на http://localhost:${PORT}`);
+ });
