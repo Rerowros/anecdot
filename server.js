@@ -396,13 +396,3 @@ app.delete("/anecdotes/:id", (req, res) => {
 const httpsServer = https.createServer(httpsOptions, app);
 httpsServer.listen(3000, () => {
   console.log('HTTPS сервер запущен на порту 3000');
-});
-
-// Также добавляем простой HTTP-сервер, который будет перенаправлять на HTTPS
-// Это не обязательно, но может быть полезно
-const http = require('http');
-http.createServer((req, res) => {
-  res.writeHead(301, { "Location": "https://" + req.headers['host'] + req.url });
-  res.end();
-}).listen(80, () => {
-  console
